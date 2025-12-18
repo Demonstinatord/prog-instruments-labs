@@ -130,7 +130,6 @@ class GameObject:
     def get_position(self) -> Tuple[int, int]:
         """
         Возвращает текущую позицию объекта.
-
         Returns:
             Текущие координаты объекта (x, y)
         """
@@ -144,7 +143,6 @@ class Wall(GameObject):
                  in_size: int, in_color: Tuple[int, int, int] = (0, 0, 255)):
         """
         Инициализирует стену.
-
         Args:
             in_surface: Объект рендерера игры
             x: Координата X стены в клетках лабиринта
@@ -158,7 +156,6 @@ class Wall(GameObject):
 class GameRenderer:
     """
     Основной класс для управления игровым процессом и отрисовки.
-
     Отвечает за отрисовку всех игровых объектов, обработку событий,
     управление состоянием игры и подсчет очков.
     """
@@ -166,7 +163,6 @@ class GameRenderer:
     def __init__(self, in_width: int, in_height: int):
         """
         Инициализирует игровой рендерер.
-
         Args:
             in_width: Ширина игрового окна в пикселях
             in_height: Высота игрового окна в пикселях
@@ -206,7 +202,6 @@ class GameRenderer:
     def tick(self, in_fps: int) -> None:
         """
         Основной игровой цикл.
-
         Args:
             in_fps: Количество кадров в секунду
         """
@@ -332,7 +327,6 @@ class GameRenderer:
     def get_hero_position(self) -> Tuple[int, int]:
         """
         Возвращает позицию главного героя.
-
         Returns:
             Координаты героя (x, y) или (0, 0) если герой отсутствует
         """
@@ -341,7 +335,6 @@ class GameRenderer:
     def set_current_mode(self, in_mode: GhostBehaviour) -> None:
         """
         Устанавливает текущий режим поведения привидений.
-
         Args:
             in_mode: Режим поведения (CHASE или SCATTER)
         """
@@ -350,7 +343,6 @@ class GameRenderer:
     def get_current_mode(self) -> GhostBehaviour:
         """
         Возвращает текущий режим поведения привидений.
-
         Returns:
             Текущий режим поведения
         """
@@ -374,7 +366,6 @@ class GameRenderer:
                          in_size: int = 30) -> None:
         """
         Отображает текст на экране.
-
         Args:
             text: Текст для отображения
             in_position: Позиция текста на экране. По умолчанию (32, 0)
@@ -388,7 +379,6 @@ class GameRenderer:
     def is_kokoro_active(self) -> bool:
         """
         Проверяет, активен ли пауэр-ап.
-
         Returns:
             True если пауэр-ап активен, иначе False
         """
@@ -416,7 +406,6 @@ class GameRenderer:
     def get_cookies(self) -> List['Cookie']:
         """
         Возвращает список всех печений.
-
         Returns:
             Список объектов печений
         """
@@ -425,7 +414,6 @@ class GameRenderer:
     def get_ghosts(self) -> List['Ghost']:
         """
         Возвращает список всех привидений.
-
         Returns:
             Список объектов привидений
         """
@@ -434,7 +422,6 @@ class GameRenderer:
     def get_powerups(self) -> List['Powerup']:
         """
         Возвращает список всех пауэр-апов.
-
         Returns:
             Список объектов пауэр-апов
         """
@@ -443,7 +430,6 @@ class GameRenderer:
     def get_game_objects(self) -> List[GameObject]:
         """
         Возвращает список всех игровых объектов.
-
         Returns:
             Список всех игровых объектов
         """
@@ -452,7 +438,6 @@ class GameRenderer:
     def add_hero(self, in_hero: 'Hero') -> None:
         """
         Добавляет героя в игру.
-
         Args:
             in_hero: Объект героя
         """
@@ -492,7 +477,6 @@ class GameRenderer:
 class MovableObject(GameObject):
     """
     Базовый класс для подвижных объектов.
-
     Расширяет GameObject, добавляя функциональность движения
     и обработки столкновений.
     """
@@ -502,7 +486,6 @@ class MovableObject(GameObject):
                  is_circle: bool = False):
         """
         Инициализирует подвижный объект.
-
         Args:
             in_surface: Объект рендерера игры
             x: Начальная координата X
@@ -522,7 +505,6 @@ class MovableObject(GameObject):
     def get_next_location(self) -> Optional[Tuple[int, int]]:
         """
         Возвращает следующую точку из очереди пути.
-
         Returns:
             Следующая точка (x, y) или None если очередь пуста
         """
@@ -531,7 +513,6 @@ class MovableObject(GameObject):
     def set_direction(self, in_direction: Direction) -> None:
         """
         Устанавливает направление движения объекта.
-
         Args:
             in_direction: Направление для установки
         """
@@ -560,10 +541,8 @@ class MovableObject(GameObject):
     def check_collision_in_direction(self, in_direction: Direction) -> Tuple[bool, Tuple[int, int]]:
         """
         Проверяет столкновение в заданном направлении.
-
         Args:
             in_direction: Направление для проверки
-
         Returns:
             (has_collision, desired_position) где:
                 has_collision: True если есть столкновение
@@ -586,7 +565,6 @@ class MovableObject(GameObject):
     def automatic_move(self, in_direction: Direction) -> None:
         """
         Автоматически перемещает объект в заданном направлении.
-
         Args:
             in_direction: Направление движения
         """
@@ -763,7 +741,6 @@ class Ghost(MovableObject):
     def calculate_direction_to_next_target(self) -> Direction:
         """
         Вычисляет направление к следующей целевой точке.
-
         Returns:
             Направление движения или NONE если требуется новый путь
         """
@@ -798,7 +775,7 @@ class Ghost(MovableObject):
 
         Args:
             in_ghost: Привидение, для которого запрашивается путь
-        w"""
+        """
 
         player_position = translate_screen_to_maze(in_ghost._renderer.get_hero_position())
         current_maze_coord = translate_screen_to_maze(in_ghost.get_position())
@@ -815,7 +792,6 @@ class Ghost(MovableObject):
     def automatic_move(self, in_direction: Direction) -> None:
         """
         Перемещает привидение в заданном направлении.
-
         Args:
             in_direction: Направление движения
         """
@@ -851,11 +827,10 @@ class Cookie(GameObject):
 
 class Powerup(GameObject):
     """Класс пауэр-апа (специальное умение)."""
-
+    
     def __init__(self, in_surface: 'GameRenderer', x: int, y: int):
         """
         Инициализирует пауэр-ап.
-
         Args:
             in_surface: Объект рендерера игры
             x: Координата X
@@ -870,7 +845,6 @@ class Pathfinder:
     def __init__(self, in_arr: List[List[int]]):
         """
         Инициализирует поисковик пути.
-
         Args:
             in_arr: Двумерный массив лабиринта (0 - стена, 1 - проход)
         """
@@ -880,7 +854,6 @@ class Pathfinder:
     def get_path(self, from_x: int, from_y: int, to_x: int, to_y: int) -> List[Tuple[int, int]]:
         """
         Находит путь от начальной точки к конечной.
-
         Args:
             from_x: Начальная координата X
             from_y: Начальная координата Y
@@ -951,7 +924,6 @@ class PacmanGameController:
     def request_new_random_path(self, in_ghost: Ghost) -> None:
         """
         Запрашивает случайный путь для привидения.
-
         Args:
             in_ghost: Привидение, для которого нужен путь
         """
@@ -990,7 +962,6 @@ class PacmanGameController:
 if __name__ == "__main__":
     """
     Основная точка входа в игру.
-
     Инициализирует игру, создает объекты и запускает игровой цикл.
     """
     unified_size = 32
@@ -1029,6 +1000,7 @@ if __name__ == "__main__":
     game_renderer.add_hero(pacman)
     game_renderer.set_current_mode(GhostBehaviour.CHASE)
     game_renderer.tick(120)
+
 
 
 
