@@ -1,8 +1,9 @@
-import pygame
-import numpy as np
-import tcod
 import random
 from enum import Enum
+
+import numpy as np
+import pygame
+import tcod
 
 
 class Direction(Enum):
@@ -595,3 +596,4 @@ if __name__ == "__main__":
     game_renderer.add_hero(pacman)
     game_renderer.set_current_mode(GhostBehaviour.CHASE)
     game_renderer.tick(120)
+
