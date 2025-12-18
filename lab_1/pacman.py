@@ -215,8 +215,10 @@ class GameRenderer:
 
             self.display_text(f"[Score: {self._score}]  [Lives: {self._lives}]")
 
-            if self._hero is None: self.display_text("YOU DIED", (self._width / 2 - 256, self._height / 2 - 256), 100)
-            if self.get_won(): self.display_text("YOU WON", (self._width / 2 - 256, self._height / 2 - 256), 100)
+            if self._hero is None: self.display_text("YOU DIED",
+                                                     (self._width / 2 - 256, self._height / 2 - 256), 100)
+            if self.get_won(): self.display_text("YOU WON",
+                                                 (self._width / 2 - 256, self._height / 2 - 256), 100)
             pygame.display.flip()
             self._clock.tick(in_fps)
             self._screen.fill(black)
@@ -618,7 +620,8 @@ class Hero(MovableObject):
             self.current_direction = self.direction_buffer
 
         if self.collides_with_wall((self.x, self.y)):
-            self.set_position(self.last_non_colliding_position[0], self.last_non_colliding_position[1])
+            self.set_position(self.last_non_colliding_position[0],
+                              self.last_non_colliding_position[1])
 
         self.handle_cookie_pickup()
         self.handle_ghosts()
@@ -693,7 +696,8 @@ class Hero(MovableObject):
 
 class Ghost(MovableObject):
     """Класс привидения."""
-    def __init__(self, in_surface, x, y, in_size: int, in_game_controller, sprite_path="images/ghost_fright.png"):
+    def __init__(self, in_surface, x, y, in_size: int, in_game_controller,
+                 sprite_path="images/ghost_fright.png"):
         """
         Инициализирует привидение.
         
@@ -735,7 +739,9 @@ class Ghost(MovableObject):
             Direction: Направление движения или NONE если требуется новый путь
         """
         if self.next_target is None:
-            if self._renderer.get_current_mode() == GhostBehaviour.CHASE and not self._renderer.is_kokoro_active():
+            mode = self._renderer.get_current_mode()
+            if (mode == GhostBehaviour.CHASE and
+                    not self._renderer.is_kokoro_active()):
                 self.request_path_to_player(self)
             else:
                 self.game_controller.request_new_random_path(self)
@@ -743,12 +749,15 @@ class Ghost(MovableObject):
 
         diff_x = self.next_target[0] - self.x
         diff_y = self.next_target[1] - self.y
+        
         if diff_x == 0:
             return Direction.DOWN if diff_y > 0 else Direction.UP
         if diff_y == 0:
             return Direction.LEFT if diff_x < 0 else Direction.RIGHT
 
-        if self._renderer.get_current_mode() == GhostBehaviour.CHASE and not self._renderer.is_kokoro_active():
+        mode = self._renderer.get_current_mode()
+        if (mode == GhostBehaviour.CHASE and
+                not self._renderer.is_kokoro_active()):
             self.request_path_to_player(self)
         else:
             self.game_controller.request_new_random_path(self)
@@ -763,8 +772,12 @@ class Ghost(MovableObject):
         """
         player_position = translate_screen_to_maze(in_ghost._renderer.get_hero_position())
         current_maze_coord = translate_screen_to_maze(in_ghost.get_position())
-        path = self.game_controller.p.get_path(current_maze_coord[1], current_maze_coord[0], player_position[1],
-                                               player_position[0])
+        path = self.game_controller.p.get_path(
+            current_maze_coord[1],
+            current_maze_coord[0],
+            player_position[1],
+            player_position[0]
+        )
 
         new_path = [translate_maze_to_screen(item) for item in path]
         in_ghost.set_new_path(new_path)
@@ -911,8 +924,11 @@ class PacmanGameController:
         random_space = random.choice(self.reachable_spaces)
         current_maze_coord = translate_screen_to_maze(in_ghost.get_position())
 
-        path = self.p.get_path(current_maze_coord[1], current_maze_coord[0], random_space[1],
-                               random_space[0])
+        path = self.p.get_path(current_maze_coord[1],
+                               current_maze_coord[0],
+                               random_space[1],
+                               random_space[0]
+                              )
         test_path = [translate_maze_to_screen(item) for item in path]
         in_ghost.set_new_path(test_path)
 
@@ -955,12 +971,18 @@ if __name__ == "__main__":
 
     for cookie_space in pacman_game.cookie_spaces:
         translated = translate_maze_to_screen(cookie_space)
-        cookie = Cookie(game_renderer, translated[0] + unified_size / 2, translated[1] + unified_size / 2)
+        cookie = Cookie(game_renderer,
+                        translated[0] + unified_size / 2,
+                        translated[1] + unified_size / 2
+                       )
         game_renderer.add_cookie(cookie)
 
     for powerup_space in pacman_game.powerup_spaces:
         translated = translate_maze_to_screen(powerup_space)
-        powerup = Powerup(game_renderer, translated[0] + unified_size / 2, translated[1] + unified_size / 2)
+        powerup = Powerup(game_renderer,
+                          translated[0] + unified_size / 2,
+                          translated[1] + unified_size / 2
+                         )
         game_renderer.add_powerup(powerup)
 
     for i, ghost_spawn in enumerate(pacman_game.ghost_spawns):
@@ -973,5 +995,6 @@ if __name__ == "__main__":
     game_renderer.add_hero(pacman)
     game_renderer.set_current_mode(GhostBehaviour.CHASE)
     game_renderer.tick(120)
+
 
 
