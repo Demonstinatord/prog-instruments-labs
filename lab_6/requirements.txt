@@ -1,3 +1,4 @@
+pytest
 pygame
 numpy
 tcod
