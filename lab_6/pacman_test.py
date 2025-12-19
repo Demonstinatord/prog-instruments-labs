@@ -1,5 +1,5 @@
 import pytest
-#import pygame
+import pygame
 from unittest.mock import Mock, patch
 from enum import Enum
 
@@ -280,5 +280,6 @@ class Pathfinder:
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
+
 
 
