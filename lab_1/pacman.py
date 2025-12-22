@@ -218,14 +218,10 @@ class GameRenderer:
 
             if self._hero is None:
                 self.display_text("YOU DIED",
-                        (self._width / 2 - 256, self._height / 2 - 256),
-                            100
-                                  )
+                    (self._width / 2 - 256, self._height / 2 - 256), 100)
             if self.get_won():
                 self.display_text("YOU WON",
-                                  (self._width / 2 - 256, self._height / 2 - 256),
-                                  100
-                                  )
+                    (self._width / 2 - 256, self._height / 2 - 256), 100)
             pygame.display.flip()
             self._clock.tick(in_fps)
             self._screen.fill(black)
@@ -363,7 +359,7 @@ class GameRenderer:
             self.end_game()
 
     def display_text(self, text: str, in_position: Tuple[float, float] = (32, 0),
-                         in_size: int = 30) -> None:
+                     in_size: int = 30) -> None:
         """
         Отображает текст на экране.
         Args:
@@ -1000,13 +996,3 @@ if __name__ == "__main__":
     game_renderer.add_hero(pacman)
     game_renderer.set_current_mode(GhostBehaviour.CHASE)
     game_renderer.tick(120)
-
-
-
-
-
-
-
-
-
-
