@@ -152,11 +152,11 @@ class GameRenderer:
             self._screen.fill(black)
             self._handle_events()
 
-        print("Game over")
+
 
     def handle_mode_switch(self):
         current_phase_timings = self._modes[self._current_phase]
-        print(f"Current phase: {str(self._current_phase)}, current_phase_timings: {str(current_phase_timings)}")
+
         logger.info(f"Current phase: {str(self._current_phase)}")
         scatter_timing = current_phase_timings[0]
         chase_timing = current_phase_timings[1]
@@ -171,7 +171,9 @@ class GameRenderer:
         pygame.time.set_timer(self._mode_switch_event, used_timing * 1000)
 
     def start_kokoro_timeout(self):
-        pygame.time.set_timer(self._kokoro_end_event, 15000)  # 15s
+        pygame.time.set_timer(self._kokoro_end_event, 15000) # 15s
+        global start_kokoro_time
+        start_kokoro_time=pygame.time.get_ticks()
 
     def add_game_object(self, obj: GameObject):
         self._game_objects.append(obj)
@@ -193,6 +195,7 @@ class GameRenderer:
         self.set_current_mode(GhostBehaviour.SCATTER)
         self.start_kokoro_timeout()
         logger.info("kokoro activated")
+        pygame.time.set_timer(pygame.USEREVENT + 4, 500)
 
     def set_won(self):
         self._won = True
@@ -257,6 +260,7 @@ class GameRenderer:
         self._hero = in_hero
 
     def _handle_events(self):
+        global button_pressed
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self._done = True
@@ -264,8 +268,16 @@ class GameRenderer:
             if event.type == self._mode_switch_event:
                 self.handle_mode_switch()
 
+            if event.type == pygame.USEREVENT +4:
+
+                logger.info(f"kokoro time left {start_kokoro_time+15000-pygame.time.get_ticks()} ms")
+
+
+
             if event.type == self._kokoro_end_event:
                 self._kokoro_active = False
+
+                pygame.time.set_timer(pygame.USEREVENT + 4, 0)
                 logger.info("kokoro deactivated")
 
             if event.type == self._pakupaku_event:
@@ -273,15 +285,24 @@ class GameRenderer:
                 self._hero.mouth_open = not self._hero.mouth_open
 
         pressed = pygame.key.get_pressed()
+
         if self._hero is None: return
         if pressed[pygame.K_UP]:
             self._hero.set_direction(Direction.UP)
+            button_pressed = True
+            logger.info("wanted direction: up")
         elif pressed[pygame.K_LEFT]:
             self._hero.set_direction(Direction.LEFT)
+            logger.info("wanted direction: left")
+            button_pressed = True
         elif pressed[pygame.K_DOWN]:
             self._hero.set_direction(Direction.DOWN)
+            logger.info("wanted direction: down")
+            button_pressed = True
         elif pressed[pygame.K_RIGHT]:
             self._hero.set_direction(Direction.RIGHT)
+            logger.info("wanted direction: right")
+            button_pressed = True
 
 
 class MovableObject(GameObject):
@@ -300,6 +321,7 @@ class MovableObject(GameObject):
     def set_direction(self, in_direction):
         self.current_direction = in_direction
         self.direction_buffer = in_direction
+
 
     def collides_with_wall(self, in_position):
         collision_rect = pygame.Rect(in_position[0], in_position[1], self._size, self._size)
@@ -349,6 +371,7 @@ class Hero(MovableObject):
         self.mouth_open = True
 
     def tick(self):
+
         # TELEPORT
         if self.x < 0:
             self.x = self._renderer._width
@@ -364,6 +387,7 @@ class Hero(MovableObject):
             self.automatic_move(self.direction_buffer)
             self.current_direction = self.direction_buffer
 
+
         if self.collides_with_wall((self.x, self.y)):
             self.set_position(self.last_non_colliding_position[0], self.last_non_colliding_position[1])
 
@@ -371,6 +395,8 @@ class Hero(MovableObject):
         self.handle_ghosts()
 
     def automatic_move(self, in_direction: Direction):
+        global direction_changed
+        global button_pressed
         collision_result = self.check_collision_in_direction(in_direction)
 
         desired_position_collides = collision_result[0]
@@ -378,8 +404,16 @@ class Hero(MovableObject):
             self.last_working_direction = self.current_direction
             desired_position = collision_result[1]
             self.set_position(desired_position[0], desired_position[1])
+
         else:
             self.current_direction = self.last_working_direction
+
+        if not collision_result[0] and button_pressed:
+            direction_changed=True
+            button_pressed=False
+        if direction_changed==True:
+            logger.info(f"{self.current_direction}")
+            direction_changed = False
 
     def handle_cookie_pickup(self):
         collision_rect = pygame.Rect(self.x, self.y, self._size, self._size)
@@ -411,12 +445,16 @@ class Hero(MovableObject):
     def handle_ghosts(self):
         collision_rect = pygame.Rect(self.x, self.y, self._size, self._size)
         ghosts = self._renderer.get_ghosts()
+
         game_objects = self._renderer.get_game_objects()
         for ghost in ghosts:
             collides = collision_rect.colliderect(ghost.get_shape())
             if collides and ghost in game_objects:
                 if self._renderer.is_kokoro_active():
                     game_objects.remove(ghost)
+                    ghosts.remove(ghost)
+                    ghosts_left = len(ghosts)
+                    logger.info(f"ghosts left {ghosts_left}")
                     self._renderer.add_score(ScoreType.GHOST)
                 else:
                     if not self._renderer.get_won():
@@ -593,6 +631,9 @@ class PacmanGameController:
 
 if __name__ == "__main__":
     unified_size = 32
+    start_kokoro_time=0
+    direction_changed=0
+    button_pressed=0
     pacman_game = PacmanGameController()
     size = pacman_game.size
     game_renderer = GameRenderer(size[0] * unified_size, size[1] * unified_size)
